@@ -1,4 +1,78 @@
 package com.example.libraryapi.service;
 
+import com.example.libraryapi.dto.BookRequest;
+import com.example.libraryapi.dto.BookResponse;
+import com.example.libraryapi.exception.BookNotFoundException;
+import com.example.libraryapi.model.Author;
+import com.example.libraryapi.model.Book;
+import com.example.libraryapi.repository.AuthorRepository;
+import com.example.libraryapi.repository.BookRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
 public class BookService {
+
+    private final BookRepository repository;
+    private final AuthorRepository authorRepository;
+
+    public BookService(BookRepository repository, AuthorRepository authorRepository) {
+        this.repository = repository;
+        this.authorRepository = authorRepository;
+    }
+
+    public BookResponse createBook(BookRequest request) {
+        Author author = authorRepository.findById(request.authorId())
+                .orElseThrow(() -> new RuntimeException("Author not found"));
+        Book book = new Book();
+        book.setTitle(request.title());
+        book.setIsbn(request.isbn());
+        book.setPublishedYear(request.publishedYear());
+        book.setAuthor(author);
+        
+        return mapToResponse(repository.save(book));
+    }
+
+    public List<BookResponse> getAllBooks() {
+        return repository.findAll().stream()
+            .map(this::mapToResponse)
+            .toList();
+    }
+
+    public BookResponse getBookById(Long id) {
+        Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+        return mapToResponse(book);
+    }
+
+    public BookResponse updateBook(Long id, BookRequest request) {
+        Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+
+        Author author = authorRepository.findById(request.authorId())
+            .orElseThrow(() -> new RuntimeException("Author not found"));
+
+        book.setTitle(request.title());
+        book.setIsbn(request.isbn());
+        book.setPublishedYear(request.publishedYear());
+        book.setAuthor(author);
+
+        return mapToResponse(repository.save(book));
+    }
+
+    public void deleteBook(Long id) {
+        if (!repository.existsById(id)) {
+            throw new BookNotFoundException(id);
+        }
+        repository.deleteById(id);
+    }
+
+    private BookResponse mapToResponse(Book book) {
+        return new BookResponse(
+            book.getId(),
+            book.getTitle(),
+            book.getAuthor().getName(),
+            book.getIsbn(),
+            book.getPublishedYear()
+        );
+    }
 }

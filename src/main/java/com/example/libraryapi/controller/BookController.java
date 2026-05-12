@@ -13,11 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/books")
-public class BookContoller {
+public class BookController {
 
     private final BookService service;
 
-    public BookContoller(BookService service) {
+    public BookController(BookService service) {
         this.service = service;
     }
 
@@ -44,5 +44,20 @@ public class BookContoller {
     @GetMapping("/{id}")
     public ResponseEntity<BookResponse> getBookById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getBookById(id));
+    }
+
+    @Operation(summary = "Update a book")
+    @PutMapping("/{id}")
+    public ResponseEntity<BookResponse> updateBook(
+        @PathVariable Long id,
+        @RequestBody BookRequest request) {
+            return ResponseEntity.ok(service.updateBook(id, request));
+    }
+
+    @Operation(summary = "Delete a book")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        service.deleteBook(id);
+        return ResponseEntity.noContent().build();
     }
 }

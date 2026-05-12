@@ -1,4 +1,4 @@
-package com.example.libraryapi.dto;
+package com.example.libraryapi.dto.v2;
 
 import java.util.List;
 

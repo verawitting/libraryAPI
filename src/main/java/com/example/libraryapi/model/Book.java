@@ -1,9 +1,6 @@
-package com.example.libraryapi.entity;
+package com.example.libraryapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Book {
@@ -12,13 +9,17 @@ public class Book {
     private Long id;
 
     private String title;
-    private String author;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+
     private String isbn;
     private int publishedYear;
 
     public Book () {};
     
-    public Book (String title, String author, String isbn, int publishedYear) {
+    public Book (String title, Author author, String isbn, int publishedYear) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -37,11 +38,11 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor (String author) {
+    public void setAuthor (Author author) {
         this.author = author;
     }
 

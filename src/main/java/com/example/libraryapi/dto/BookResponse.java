@@ -1,4 +1,9 @@
 package com.example.libraryapi.dto;
 
-public class BookResponse {
-}
+public record BookResponse(
+    Long id,
+    String title,
+    String author,
+    String isbn,
+    int publishedYear
+) {}

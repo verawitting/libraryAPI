@@ -1,7 +1,7 @@
-package com.example.libraryapi.controller;
+package com.example.libraryapi.controller.v2;
 
-import com.example.libraryapi.dto.BookListResponseV2;
-import com.example.libraryapi.dto.BookResponseV2;
+import com.example.libraryapi.dto.v2.BookListResponseV2;
+import com.example.libraryapi.dto.v2.BookResponseV2;
 import com.example.libraryapi.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,15 +20,18 @@ public class BookControllerV2 {
         this.service = service;
     }
 
-    @Operation(summary = "Get all books")
+    @Operation(summary = "Get all books (v2)")
     @GetMapping
     public BookListResponseV2 getAllBooks() {
         List<BookResponseV2> books = service.getAllBooks()
                 .stream()
                 .map(book -> new BookResponseV2(
-                        book.getTitle(),
-                        book.getAuthor(),
-                        true
+                    book.id(),
+                    book.title(),
+                    book.author(),
+                    book.isbn(),
+                    book.publishedYear(),
+                    "Main Branch"
                 ))
                 .toList();
         return new BookListResponseV2(books);

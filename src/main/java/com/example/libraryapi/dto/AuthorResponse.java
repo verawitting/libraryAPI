@@ -1,11 +1,11 @@
 package com.example.libraryapi.dto;
 
-public class AuthorDTO {
+public class AuthorResponse {
     private Long id;
     private String name;
     private int numberOfBooks;
 
-    public AuthorDTO(Long id, String name, int numberOfBooks) {
+    public AuthorResponse(Long id, String name, int numberOfBooks) {
         this.id = id;
         this.name = name;
         this.numberOfBooks = numberOfBooks;
