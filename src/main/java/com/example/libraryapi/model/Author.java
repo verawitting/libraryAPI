@@ -33,6 +33,13 @@ public class Author {
         return name;
     }
 
+    public void setName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Author name cannot be empty");
+        }
+        this.name = name;
+    }
+
     public List<Book> getBooks() {
         return books;
     }

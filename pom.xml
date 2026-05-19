@@ -75,6 +75,13 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- SPRING VAULT -->
+        <dependency>
+            <groupId>org.springframework.vault</groupId>
+            <artifactId>spring-vault-core</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

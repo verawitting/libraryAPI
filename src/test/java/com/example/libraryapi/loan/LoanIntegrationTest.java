@@ -15,12 +15,11 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldCreateLoan() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Author");
+        AuthorRequest author = new AuthorRequest("Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",
@@ -44,12 +43,11 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturn400WhenLoaningSameBookTwice() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Author");
+        AuthorRequest author = new AuthorRequest("Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",
@@ -75,12 +73,11 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldGetAllLoans() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Author");
+        AuthorRequest author = new AuthorRequest("Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",
@@ -107,12 +104,11 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldFailWithConcurrentLoans() throws Exception {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Author");
+        AuthorRequest author = new AuthorRequest("Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",

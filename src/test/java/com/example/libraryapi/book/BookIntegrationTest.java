@@ -14,12 +14,11 @@ class BookIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldCreateBook() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Test Author");
+        AuthorRequest author = new AuthorRequest("Test Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",
@@ -36,12 +35,11 @@ class BookIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnListOfAllBooks() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Author");
+        AuthorRequest author = new AuthorRequest("Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",
@@ -70,12 +68,11 @@ class BookIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldGetBookById() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Author");
+        AuthorRequest author = new AuthorRequest("Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",

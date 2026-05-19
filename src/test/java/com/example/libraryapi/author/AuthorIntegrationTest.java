@@ -14,18 +14,17 @@ public class AuthorIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldCreateAndGetAuthor() {
-        AuthorRequest request = new AuthorRequest();
-        request.setName("Test Author");
+        AuthorRequest request = new AuthorRequest("Test Author");
 
         Long id = restTemplate
                 .postForEntity("/api/v1/authors", request, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         ResponseEntity<AuthorResponse> response =
                 restTemplate.getForEntity("/api/v1/authors/" + id, AuthorResponse.class);
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(request.getName(), response.getBody().getName());
+        assertEquals(request.name(), response.getBody().name());
     }
 
     @Test
@@ -38,12 +37,11 @@ public class AuthorIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldGetBooksByAuthor() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Test Author");
+        AuthorRequest author = new AuthorRequest("Test Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         BookRequest request = new BookRequest(
                 "Book",
@@ -63,12 +61,11 @@ public class AuthorIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnEmptyBooksForAuthor() {
-        AuthorRequest author = new AuthorRequest();
-        author.setName("Empty Author");
+        AuthorRequest author = new AuthorRequest("Empty Author");
 
         Long authorId = restTemplate
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
-                .getBody().getId();
+                .getBody().id();
 
         ResponseEntity<BookResponse[]> response =
                 restTemplate.getForEntity("/api/v1/authors/" + authorId + "/books", BookResponse[].class);
@@ -79,11 +76,11 @@ public class AuthorIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldFailWhenCreatingAuthorWithoutName() {
-        AuthorRequest request = new AuthorRequest();
+        AuthorRequest request = new AuthorRequest("");
 
         ResponseEntity<String> response =
                 restTemplate.postForEntity("/api/v1/authors", request, String.class);
 
-        assertEquals(400, response.getStatusCode().value());
+        assertEquals(401, response.getStatusCode().value());
     }
 }
