@@ -9,6 +9,8 @@ import com.example.libraryapi.repository.AuthorRepository;
 import com.example.libraryapi.repository.BookRepository;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +42,13 @@ public class BookService {
             .map(this::mapToResponse);
     }
 
+    @Cacheable(value = "books", key = "#id")
     public BookResponse getBookById(Long id) {
         Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
         return mapToResponse(book);
     }
 
+    @CacheEvict(value = "books", allEntries = true)
     public BookResponse updateBook(Long id, BookRequest request) {
         Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
 
@@ -59,6 +63,7 @@ public class BookService {
         return mapToResponse(repository.save(book));
     }
 
+    @CacheEvict(value = "books", allEntries = true)
     public void deleteBook(Long id) {
         if (!repository.existsById(id)) {
             throw new BookNotFoundException(id);
