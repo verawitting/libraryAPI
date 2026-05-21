@@ -6,6 +6,9 @@ import com.example.libraryapi.dto.BookResponse;
 import com.example.libraryapi.exception.AuthorNotFoundException;
 import com.example.libraryapi.model.Author;
 import com.example.libraryapi.repository.AuthorRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,11 +28,9 @@ public class AuthorService {
         return mapToResponse(saved);
     }
 
-    public List<AuthorResponse> getAllAuthors() {
-        return repository.findAll()
-            .stream()
-            .map(this::mapToResponse)
-            .toList();
+    public Page<AuthorResponse> getAllAuthors(Pageable pageable) {
+        return repository.findAll(pageable)
+            .map(this::mapToResponse);
     }
 
     public AuthorResponse getAuthorById(Long id) {

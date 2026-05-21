@@ -7,9 +7,10 @@ import com.example.libraryapi.model.Author;
 import com.example.libraryapi.model.Book;
 import com.example.libraryapi.repository.AuthorRepository;
 import com.example.libraryapi.repository.BookRepository;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 @Service
 public class BookService {
@@ -34,10 +35,9 @@ public class BookService {
         return mapToResponse(repository.save(book));
     }
 
-    public List<BookResponse> getAllBooks() {
-        return repository.findAll().stream()
-            .map(this::mapToResponse)
-            .toList();
+    public Page<BookResponse> getAllBooks(Pageable pageable) {
+        return repository.findAll(pageable)
+            .map(this::mapToResponse);
     }
 
     public BookResponse getBookById(Long id) {

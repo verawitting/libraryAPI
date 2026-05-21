@@ -6,10 +6,12 @@ import com.example.libraryapi.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/books")
@@ -34,8 +36,8 @@ public class BookController {
     @Operation(summary = "Get all books")
     @ApiResponse(responseCode = "200", description = "List of books")
     @GetMapping
-    public ResponseEntity<List<BookResponse>> getAllBooks() {
-        return ResponseEntity.ok(service.getAllBooks());
+    public ResponseEntity<Page<BookResponse>> getAllBooks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        return ResponseEntity.ok(service.getAllBooks(pageable));
     }
 
     @Operation(summary = "Get a book by id")

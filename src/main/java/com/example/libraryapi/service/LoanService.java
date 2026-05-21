@@ -8,10 +8,13 @@ import com.example.libraryapi.model.Book;
 import com.example.libraryapi.model.Loan;
 import com.example.libraryapi.repository.BookRepository;
 import com.example.libraryapi.repository.LoanRepository;
+
+import java.time.LocalDate;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class LoanService {
@@ -26,8 +29,8 @@ public class LoanService {
     @Transactional
     public LoanResponse createLoan(LoanRequest request) {
 
-        Book book = bookRepository.findByIdForUpdate(request.BookId())
-                .orElseThrow(() -> new BookNotFoundException(request.BookId()));
+        Book book = bookRepository.findByIdForUpdate(request.bookId())
+                .orElseThrow(() -> new BookNotFoundException(request.bookId()));
 
         loanRepository.findByBookId(book.getId()).ifPresent(l -> {
             throw new BookAlreadyOnLoanException(book.getId());
@@ -36,28 +39,47 @@ public class LoanService {
         Loan loan = new Loan(book);
         Loan saved = loanRepository.save(loan);
 
-        return new LoanResponse(saved.getId(), book.getId(), book.getTitle(), saved.getLoanDate(), saved.getReturnDate()
+        return mapToResponse(saved);
+    }
+
+    public LoanResponse getLoanById(Long id) {
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan not found"));
+        return mapToResponse(loan);
+    }
+
+    public Page<LoanResponse> getAllLoans(Pageable pageable) {
+        return loanRepository.findAll(pageable)
+                .map(this::mapToResponse);
+    }
+
+    //return book!
+    @Transactional
+    public LoanResponse updateLoan(Long id) {
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan not found"));
+        
+        loan.setReturnDate(LocalDate.now());
+
+        return mapToResponse(loanRepository.save(loan));
+    }
+
+    public void deleteLoan(Long id) {
+        
+        if (!loanRepository.existsById(id)) {
+            throw new RuntimeException("Loan not found");
+        }
+
+        loanRepository.deleteById(id);
+    }
+
+    private LoanResponse mapToResponse(Loan loan) {
+        return new LoanResponse(
+            loan.getId(),
+            loan.getBook().getId(),
+            loan.getBook().getTitle(),
+            loan.getLoanDate(),
+            loan.getReturnDate()
         );
-    }
-
-    public List<LoanResponse> getAllLoans() {
-        return loanRepository.findAll()
-                .stream()
-                .map(l -> new LoanResponse(
-                        l.getId(),
-                        l.getBook().getId(),
-                        l.getBook().getTitle(),
-                        l.getLoanDate(),
-                        l.getReturnDate()
-                ))
-                .toList();
-    }
-
-    public void updateLoan() {
-        //implement this!
-    }
-
-    public void deleteLoan() {
-        //implement this!
     }
 }
