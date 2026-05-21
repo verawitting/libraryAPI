@@ -1,13 +1,10 @@
 package com.example.libraryapi.dto;
 
-public class LoanRequest {
-    private Long bookId;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-    public Long getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(Long bookId) {
-        this.bookId = bookId;
-    }
-}
+public record LoanRequest(
+    @NotNull(message = "Book id is required")
+    @Positive(message = "Book id must be positive")
+    Long BookId
+) {}

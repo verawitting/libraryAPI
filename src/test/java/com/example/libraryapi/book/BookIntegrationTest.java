@@ -16,7 +16,7 @@ class BookIntegrationTest extends BaseIntegrationTest {
     void shouldCreateBook() {
         AuthorRequest author = new AuthorRequest("Test Author");
 
-        Long authorId = restTemplate
+        Long authorId = authenticatedAdmin()
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
                 .getBody().id();
 
@@ -28,7 +28,7 @@ class BookIntegrationTest extends BaseIntegrationTest {
         );
 
         ResponseEntity<BookResponse> response =
-                restTemplate.postForEntity("/api/v1/books", request, BookResponse.class);
+                authenticatedAdmin().postForEntity("/api/v1/books", request, BookResponse.class);
 
         assertEquals(201, response.getStatusCode().value());
     }
@@ -37,7 +37,7 @@ class BookIntegrationTest extends BaseIntegrationTest {
     void shouldReturnListOfAllBooks() {
         AuthorRequest author = new AuthorRequest("Author");
 
-        Long authorId = restTemplate
+        Long authorId = authenticatedAdmin()
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
                 .getBody().id();
 
@@ -48,10 +48,10 @@ class BookIntegrationTest extends BaseIntegrationTest {
                 authorId
         );
 
-        restTemplate.postForEntity("/api/v1/books", request, BookResponse.class);
+        authenticatedAdmin().postForEntity("/api/v1/books", request, BookResponse.class);
 
         ResponseEntity<BookResponse[]> response =
-                restTemplate.getForEntity("/api/v1/books", BookResponse[].class);
+                authenticatedUser().getForEntity("/api/v1/books", BookResponse[].class);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().length);
@@ -60,7 +60,7 @@ class BookIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturnEmptyListWhenNoBooksExist() {
         ResponseEntity<BookResponse[]> response =
-                restTemplate.getForEntity("/api/v1/books", BookResponse[].class);
+                authenticatedUser().getForEntity("/api/v1/books", BookResponse[].class);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(0, response.getBody().length);
@@ -70,7 +70,7 @@ class BookIntegrationTest extends BaseIntegrationTest {
     void shouldGetBookById() {
         AuthorRequest author = new AuthorRequest("Author");
 
-        Long authorId = restTemplate
+        Long authorId = authenticatedAdmin()
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
                 .getBody().id();
 
@@ -81,12 +81,12 @@ class BookIntegrationTest extends BaseIntegrationTest {
                 authorId
         );
 
-        Long id = restTemplate
+        Long id = authenticatedAdmin()
                 .postForEntity("/api/v1/books", request, BookResponse.class)
                 .getBody().id();
 
         ResponseEntity<BookResponse> response =
-                restTemplate.getForEntity("/api/v1/books/" + id, BookResponse.class);
+                authenticatedUser().getForEntity("/api/v1/books/" + id, BookResponse.class);
 
         assertEquals(200, response.getStatusCode().value());
     }
@@ -94,7 +94,7 @@ class BookIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturn404WhenBookNotFound() {
         ResponseEntity<String> response =
-                restTemplate.getForEntity("/api/v1/books/999", String.class);
+                authenticatedUser().getForEntity("/api/v1/books/999", String.class);
 
         assertEquals(404, response.getStatusCode().value());
     }
@@ -104,7 +104,7 @@ class BookIntegrationTest extends BaseIntegrationTest {
         String invalidJson = "{}";
 
         ResponseEntity<String> response =
-                restTemplate.postForEntity("/api/v1/books", invalidJson, String.class);
+                authenticatedAdmin().postForEntity("/api/v1/books", invalidJson, String.class);
 
         assertEquals(400, response.getStatusCode().value());
     }

@@ -29,4 +29,12 @@ public abstract class BaseIntegrationTest {
         bookRepository.deleteAll();
         authorRepository.deleteAll();
     }
+
+    protected TestRestTemplate authenticatedAdmin() {
+        return restTemplate.withBasicAuth("admin", "password");
+    }
+
+    protected TestRestTemplate authenticatedUser() {
+        return restTemplate.withBasicAuth("user", "password");
+    }
 }

@@ -26,8 +26,8 @@ public class LoanService {
     @Transactional
     public LoanResponse createLoan(LoanRequest request) {
 
-        Book book = bookRepository.findByIdForUpdate(request.getBookId())
-                .orElseThrow(() -> new BookNotFoundException(request.getBookId()));
+        Book book = bookRepository.findByIdForUpdate(request.BookId())
+                .orElseThrow(() -> new BookNotFoundException(request.BookId()));
 
         loanRepository.findByBookId(book.getId()).ifPresent(l -> {
             throw new BookAlreadyOnLoanException(book.getId());

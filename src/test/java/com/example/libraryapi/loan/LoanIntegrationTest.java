@@ -17,7 +17,7 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
     void shouldCreateLoan() {
         AuthorRequest author = new AuthorRequest("Author");
 
-        Long authorId = restTemplate
+        Long authorId = authenticatedAdmin()
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
                 .getBody().id();
 
@@ -28,15 +28,14 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
                 authorId
         );
 
-        Long bookId = restTemplate
+        Long bookId = authenticatedAdmin()
                 .postForEntity("/api/v1/books", request, BookResponse.class)
                 .getBody().id();
 
-        LoanRequest loan = new LoanRequest();
-        loan.setBookId(bookId);
+        LoanRequest loan = new LoanRequest(bookId);
 
         ResponseEntity<LoanResponse> response =
-                restTemplate.postForEntity("/api/v1/loans", loan, LoanResponse.class);
+                authenticatedAdmin().postForEntity("/api/v1/loans", loan, LoanResponse.class);
 
         assertEquals(201, response.getStatusCode().value());
     }
@@ -45,7 +44,7 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
     void shouldReturn400WhenLoaningSameBookTwice() {
         AuthorRequest author = new AuthorRequest("Author");
 
-        Long authorId = restTemplate
+        Long authorId = authenticatedAdmin()
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
                 .getBody().id();
 
@@ -56,17 +55,16 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
                 authorId
         );
 
-        Long bookId = restTemplate
+        Long bookId = authenticatedAdmin()
                 .postForEntity("/api/v1/books", request, BookResponse.class)
                 .getBody().id();
 
-        LoanRequest loan = new LoanRequest();
-        loan.setBookId(bookId);
+        LoanRequest loan = new LoanRequest(bookId);
 
-        restTemplate.postForEntity("/api/v1/loans", loan, String.class);
+        authenticatedAdmin().postForEntity("/api/v1/loans", loan, String.class);
 
         ResponseEntity<String> second =
-                restTemplate.postForEntity("/api/v1/loans", loan, String.class);
+                authenticatedAdmin().postForEntity("/api/v1/loans", loan, String.class);
 
         assertEquals(400, second.getStatusCode().value());
     }
@@ -75,7 +73,7 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
     void shouldGetAllLoans() {
         AuthorRequest author = new AuthorRequest("Author");
 
-        Long authorId = restTemplate
+        Long authorId = authenticatedAdmin()
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
                 .getBody().id();
 
@@ -86,17 +84,16 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
                 authorId
         );
 
-        Long bookId = restTemplate
+        Long bookId = authenticatedAdmin()
                 .postForEntity("/api/v1/books", request, BookResponse.class)
                 .getBody().id();
 
-        LoanRequest loan = new LoanRequest();
-        loan.setBookId(bookId);
+        LoanRequest loan = new LoanRequest(bookId);
 
-        restTemplate.postForEntity("/api/v1/loans", loan, LoanResponse.class);
+        authenticatedAdmin().postForEntity("/api/v1/loans", loan, LoanResponse.class);
 
         ResponseEntity<LoanResponse[]> response =
-                restTemplate.getForEntity("/api/v1/loans", LoanResponse[].class);
+                authenticatedUser().getForEntity("/api/v1/loans", LoanResponse[].class);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().length);
@@ -106,7 +103,7 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
     void shouldFailWithConcurrentLoans() throws Exception {
         AuthorRequest author = new AuthorRequest("Author");
 
-        Long authorId = restTemplate
+        Long authorId = authenticatedAdmin()
                 .postForEntity("/api/v1/authors", author, AuthorResponse.class)
                 .getBody().id();
 
@@ -117,7 +114,7 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
                 authorId
         );
 
-        Long bookId = restTemplate
+        Long bookId = authenticatedAdmin()
                 .postForEntity("/api/v1/books", request, BookResponse.class)
                 .getBody().id();
 
@@ -128,9 +125,8 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
 
         for (int i = 0; i < numberOfRequests; i++) {
             tasks.add(() -> {
-                LoanRequest loan = new LoanRequest();
-                loan.setBookId(bookId);
-                return restTemplate.postForEntity("/api/v1/loans", loan, String.class);
+                LoanRequest loan = new LoanRequest(bookId);
+                return authenticatedAdmin().postForEntity("/api/v1/loans", loan, String.class);
             });
         }
 
@@ -149,5 +145,7 @@ public class LoanIntegrationTest extends BaseIntegrationTest {
                 .filter(status -> status == 201)
                 .count();
         System.out.println("Successful loans: " + successCount);
+
+        assertEquals(1, successCount);
     }
 }
