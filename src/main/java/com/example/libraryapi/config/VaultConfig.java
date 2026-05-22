@@ -17,17 +17,18 @@ public class VaultConfig {
 
     @Bean
     public VaultEndpoint vaultEndpoint() {
-        VaultEndpoint vaultEndpoint = new VaultEndpoint();
-        vaultEndpoint.setScheme("http");
-        System.out.println("----------------------------");
-        System.out.println(vaultEndpoint.toString());
-        System.out.println("----------------------------");
-        return vaultEndpoint;
+        VaultEndpoint endpoint = new VaultEndpoint();
+        endpoint.setHost("localhost");
+        endpoint.setPort(8200);
+        endpoint.setScheme("http");
+        return endpoint;
     }
 
     @Bean
-    public VaultTemplate vaultTemplate(VaultEndpoint vaultEndpoint,
-            ClientAuthentication auth) {
-        return new VaultTemplate(vaultEndpoint, auth);
+    public VaultTemplate vaultTemplate() {
+        return new VaultTemplate(
+            vaultEndpoint(),
+            new TokenAuthentication("my-dev-root-token")
+        );
     }
 }

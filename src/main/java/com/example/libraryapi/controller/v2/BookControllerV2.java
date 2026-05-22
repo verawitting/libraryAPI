@@ -4,6 +4,8 @@ import com.example.libraryapi.dto.v2.BookListResponseV2;
 import com.example.libraryapi.dto.v2.BookResponseV2;
 import com.example.libraryapi.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +24,8 @@ public class BookControllerV2 {
 
     @Operation(summary = "Get all books (v2)")
     @GetMapping
-    public BookListResponseV2 getAllBooks() {
-        List<BookResponseV2> books = service.getAllBooks()
+    public BookListResponseV2 getAllBooks(Pageable pageable) {
+        List<BookResponseV2> books = service.getAllBooks(pageable)
                 .stream()
                 .map(book -> new BookResponseV2(
                     book.id(),
