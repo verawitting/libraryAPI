@@ -4,54 +4,37 @@ import com.example.libraryapi.model.Author;
 import com.example.libraryapi.model.Book;
 import com.example.libraryapi.repository.AuthorRepository;
 import com.example.libraryapi.repository.BookRepository;
+import com.example.libraryapi.service.SecretService;
 
-import java.util.Collections;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.vault.core.VaultKeyValueOperations;
-import org.springframework.vault.core.VaultKeyValueOperationsSupport;
-import org.springframework.vault.core.VaultTemplate;
-import org.springframework.vault.support.VaultResponse;
 
 @Component
 public class DataLoader implements CommandLineRunner {
 
         private final AuthorRepository authorRepository;
         private final BookRepository bookRepository;
+        private final SecretService secretService;
 
         public DataLoader(
                         AuthorRepository authorRepository,
-                        BookRepository bookRepository) {
+                        BookRepository bookRepository,
+                        SecretService secretService ) {
                 this.authorRepository = authorRepository;
                 this.bookRepository = bookRepository;
+                this.secretService = secretService;
         }
-
-        @Autowired
-        private VaultTemplate vaultTemplate;
 
         @Override
         public void run(String... args) throws Exception {
-                // seedUserToVault();
+
+                try {
+                        System.out.println("Password from vault: " + secretService.getDbPassword());
+                } catch (Exception e) {
+                        System.out.println("Vault not available: " + e.getMessage());
+                }
+
                 seedDatabase();
-        }
-
-        private void seedUserToVault() {
-                VaultKeyValueOperations keyValueOperations = vaultTemplate.opsForKeyValue("secret",
-                                VaultKeyValueOperationsSupport.KeyValueBackend.KV_2);
-
-                System.out.println();
-                System.out.println("Post secret" + Collections.singletonMap("user",
-                                "pastaword").toString() + " to vault");
-                System.out.println();
-
-                keyValueOperations.put("secret", Collections.singletonMap("user",
-                                "pastaword"));
-
-                VaultResponse read = keyValueOperations.get("secret");
-                System.out.println("Value of user password from vault [" +
-                                read.getRequiredData().get("user") + "]");
         }
 
         private void seedDatabase() {

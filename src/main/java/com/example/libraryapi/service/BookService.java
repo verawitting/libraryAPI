@@ -46,9 +46,13 @@ public class BookService {
     @Cacheable(value = "books", key = "#id")
     public BookResponse getBookById(Long id) {
 
-        // adding timing to show redis efficientness
+        // adding timing to show redis efficientness 
+        // I choose to keep this fake delay to get a bigger effect when measuring. 
+        // I know this is not quite a "fair" comparison, yet using a local database
+        // creates too little difference for me to measure. 
         try {
             Thread.sleep(2000);
+            System.out.println("Calling db for book!");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

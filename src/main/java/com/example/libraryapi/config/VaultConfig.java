@@ -2,7 +2,6 @@ package com.example.libraryapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.authentication.TokenAuthentication;
 import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.VaultTemplate;
@@ -11,23 +10,22 @@ import org.springframework.vault.core.VaultTemplate;
 public class VaultConfig {
 
     @Bean
-    public ClientAuthentication clientAuthentication() {
-        return new TokenAuthentication("my-dev-root-token");
-    }
+    public VaultTemplate vaultTemplate() {
 
-    @Bean
-    public VaultEndpoint vaultEndpoint() {
+        String token = System.getenv("VAULT_TOKEN");
+
+        if (token == null || token.isBlank()) {
+            throw new IllegalStateException("VAULT_TOKEN environment variable is missing.");
+        }
+
         VaultEndpoint endpoint = new VaultEndpoint();
-        endpoint.setHost("localhost");
+        endpoint.setHost("127.0.0.1");
         endpoint.setPort(8200);
         endpoint.setScheme("http");
-        return endpoint;
-    }
 
-    @Bean
-    public VaultTemplate vaultTemplate() {
         return new VaultTemplate(
-                vaultEndpoint(),
-                new TokenAuthentication("my-dev-root-token"));
+                endpoint,
+                new TokenAuthentication(token)
+        );
     }
 }
