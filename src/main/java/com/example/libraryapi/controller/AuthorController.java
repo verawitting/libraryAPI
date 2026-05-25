@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -47,7 +48,7 @@ public class AuthorController {
     @ApiResponse(responseCode = "200", description = "List of all authors")
     @GetMapping
     public ResponseEntity<Page<AuthorResponse>> getAllAuthors(
-            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, sort = "id") Pageable pageable) {
         return ResponseEntity.ok(service.getAllAuthors(pageable));
     }
 

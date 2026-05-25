@@ -27,8 +27,7 @@ public class VaultConfig {
     @Bean
     public VaultTemplate vaultTemplate() {
         return new VaultTemplate(
-            vaultEndpoint(),
-            new TokenAuthentication("my-dev-root-token")
-        );
+                vaultEndpoint(),
+                new TokenAuthentication("my-dev-root-token"));
     }
 }

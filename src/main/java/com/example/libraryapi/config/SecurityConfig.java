@@ -16,7 +16,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -32,51 +32,48 @@ public class SecurityConfig {
 
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})
+                .cors(cors -> {
+                })
                 .authorizeHttpRequests(auth -> auth
-                        //swagger
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        //authors
+                        // swagger
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        // authors
                         .requestMatchers(HttpMethod.GET, "/api/v1/authors/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/authors/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/authors(**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/authors/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/authors/**").hasRole("ADMIN")
 
-                        //books
+                        // books
                         .requestMatchers(HttpMethod.GET, "/api/v1/books/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/books/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/books/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/books/**").hasRole("ADMIN")
 
-                        //loans
+                        // loans
                         .requestMatchers("/api/v1/loans/**").authenticated()
 
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
 
                 .addFilterBefore(
-                    rateLimitFilter,
-                    UsernamePasswordAuthenticationFilter.class
-                )
+                        rateLimitFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())
-                .build();       
+                .build();
     }
 
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
         configuration.setAllowedOrigins(List.of(
-            "http://localhost:3000"
-        ));
+                "http://localhost:3000"));
 
         configuration.setAllowedMethods(List.of(
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE"
-        ));
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"));
 
         configuration.setAllowedHeaders(List.of("*"));
 
@@ -94,16 +91,16 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        
+
         UserDetails admin = User.withUsername("admin")
-        .password(passwordEncoder.encode("admin123"))
-        .roles("ADMIN")
-        .build();
+                .password(passwordEncoder.encode("admin123"))
+                .roles("ADMIN")
+                .build();
 
         UserDetails user = User.withUsername("user")
-            .password(passwordEncoder.encode("password123"))
-            .roles("USER")
-            .build();
+                .password(passwordEncoder.encode("password123"))
+                .roles("USER")
+                .build();
 
         return new InMemoryUserDetailsManager(admin, user);
     }

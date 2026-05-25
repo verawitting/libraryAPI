@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,7 +41,7 @@ public class LoanController {
     @Operation(summary = "Get all loans")
     @ApiResponse(responseCode = "200", description = "List of loans")
     @GetMapping
-    public ResponseEntity<Page<LoanResponse>> getAllLoans(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+    public ResponseEntity<Page<LoanResponse>> getAllLoans(@ParameterObject @PageableDefault(size = 10, sort = "id") Pageable pageable) {
         return ResponseEntity.ok(service.getAllLoans(pageable));
     }
 

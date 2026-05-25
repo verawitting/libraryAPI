@@ -25,6 +25,7 @@ public class BookService {
         this.authorRepository = authorRepository;
     }
 
+    @CacheEvict(value= "books", allEntries = true)
     public BookResponse createBook(BookRequest request) {
         Author author = authorRepository.findById(request.authorId())
                 .orElseThrow(() -> new RuntimeException("Author not found"));
@@ -44,6 +45,14 @@ public class BookService {
 
     @Cacheable(value = "books", key = "#id")
     public BookResponse getBookById(Long id) {
+
+        // adding timing to show redis efficientness
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
         return mapToResponse(book);
     }
