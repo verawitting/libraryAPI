@@ -15,15 +15,15 @@ It demonstrates security, performance optimisation, and secret management using 
 - Rate limiting using Bucket4j (IP-based protection)
 
 
-### ⚡ Performance Optimisation
+### Performance Optimisation
 - Redis caching for `GET /books/{id}`
 - Spring Cache abstraction
 - Pagination support using Pageable for list endpoints
 
 
 ### Secret Management
-- HashiCorp Vault integration
-- Database password retrieved securely at runtime
+- Vault integration
+- Database password retrieved at runtime
 - No sensitive credentials stored in `application.properties`
 
 
@@ -42,7 +42,7 @@ A simulated delay (`Thread.sleep(2000)`) was added in the service layer to bette
 - Request 1: **0.337 s**
 - Request 5 (after reset / uncached path): **0.274 s**
 
-➡ These requests triggered the full service flow including repository access and simulated delay.
+These requests triggered the full service flow including repository access and simulated delay.
 
 
 #### With cache enabled (subsequent requests)
@@ -52,7 +52,7 @@ A simulated delay (`Thread.sleep(2000)`) was added in the service layer to bette
 - Request 4: **0.007 s**
 - Request 6: **0.014 s**
 
-➡ These requests were served from cache (Spring Cache layer), bypassing database access and service delay.
+These requests were served from cache (Spring Cache layer), bypassing database access and service delay.
 
 
 ### Cache behaviour logs
